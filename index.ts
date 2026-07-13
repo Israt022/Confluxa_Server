@@ -91,7 +91,7 @@ const adminVerify = async(req: Request,
 
 export async function connectToMongoDB() {
   try {
-    await client.connect();
+    // await client.connect();
     const db = client.db("confluxa_db");
     const userCollection = db.collection("user");
     const eventCollection = db.collection("event");
@@ -219,7 +219,7 @@ app.get("/", (req, res) => {
   res.send("Confluxa Server Running...");
 });
 connectToMongoDB();
-// app.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`);
-// });
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 export default app;
