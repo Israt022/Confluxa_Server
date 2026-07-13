@@ -297,6 +297,38 @@ export async function connectToMongoDB() {
 
     });
 
+    // cancle
+    // cancel booking
+  app.delete("/bookings/:bookingId", verifyToken, async(
+    req: Request<{bookingId:string}>,
+    res
+  )=>{
+
+      const user = (req as any).user;
+
+      const {bookingId}=req.params;
+
+
+      const result = await bookingCollection.deleteOne({
+        _id: new ObjectId(bookingId),
+        userEmail:user.email
+      });
+
+
+      if(result.deletedCount===0){
+        return res.status(404).json({
+          message:"Booking not found"
+        });
+      }
+
+
+      res.json({
+        success:true,
+        message:"Booking cancelled successfully"
+      });
+
+    });
+
 
     console.log("You successfully connected to MongoDB!");
     return client;
