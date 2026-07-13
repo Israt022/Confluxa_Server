@@ -30,7 +30,7 @@ const verifyToken = async (
   next: NextFunction
 ) => {
   const authHeader = req.headers.authorization;
-  
+  console.log(authHeader)
   if(!authHeader || !authHeader.startsWith('Bearer')){
     return res.status(401).json({message : "Unauthorize"});
   }
@@ -43,13 +43,50 @@ const verifyToken = async (
 
   try{
     const {payload} = await jwtVerify(token, JWKS);
-    console.log(payload);
+    // console.log(payload);
     // req.user = payload;
-    
+    (req as any).user = payload;    
     next();
   }catch(error){
+    // console.log(error)
     return res.status(401).json({message : "Unauthorize"});
   }
+}
+
+// Organizer verify
+const organizerVerify = async(req: Request,
+  res: Response,
+  next: NextFunction) => {
+  const user = (req as AuthRequest).user;
+
+  
+  if(user?.role !== "organizer"){
+    return res.status(403).json({message : "Forbidden"});
+  }
+
+  next();
+};
+// User verify
+const userVerify = async(req: Request,
+  res: Response,
+  next: NextFunction) => {
+  const user = (req as AuthRequest).user;
+  if(user?.role !== "user"){
+    return res.status(403).send({message : "Forbidden access"})
+  }
+
+  next();
+}
+// Admin verify
+const adminVerify = async(req: Request,
+  res: Response,
+  next: NextFunction) => {
+  const user = (req as AuthRequest).user;
+  if(user?.role !== "admin"){
+    return res.status(403).send({message : "Forbidden access"})
+  }
+
+  next();
 }
 
 export async function connectToMongoDB() {
@@ -66,7 +103,7 @@ export async function connectToMongoDB() {
       res.json(result)
     });
 
-    app.post('/events', verifyToken, async(req,res) => {
+    app.post('/events', verifyToken, organizerVerify, async(req,res) => {
         try {
             const data = req.body;
 
@@ -104,4 +141,7 @@ app.get("/", (req, res) => {
   res.send("Confluxa Server Running...");
 });
 connectToMongoDB();
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 export default app;
