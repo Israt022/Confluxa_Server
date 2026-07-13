@@ -124,6 +124,84 @@ export async function connectToMongoDB() {
             });
         }
     })
+    // get public ticket 
+    app.get('/event', async (req, res) => {
+      const result = await eventCollection.find().toArray();
+      res.json(result);
+    });
+    
+    // get public ticket 
+    // app.get('/event', async (req, res) => {
+    //   const query = {
+    //       status: "approved",
+    //       hidden: { $ne: true }
+    //   }
+
+    //   // from location 
+    //   if(req.query.from){
+    //     query.fromLocation = {
+    //       $regex: req.query.from.trim(),
+    //       $options: "i",
+    //       // $regex: new RegExp(req.query.from.trim(), "i"),
+    //     }
+    //   }
+    //   // to location 
+    //   if(req.query.to){
+    //     query.toLocation = {
+    //       $regex: req.query.to.trim(),
+    //       $options: "i",
+    //     }
+    //   }
+
+    //   // transport filter
+    //   if (
+    //     req.query.transport &&
+    //     req.query.transport !== "all"
+    //   ) {
+    //     query.transportType = req.query.transport;
+    //   }
+
+    //   let sortQuery = { createdAt: -1 };
+
+    //   // sort by price
+    //   if (req.query.sort === "low") {
+    //     sortQuery = { pricePerUnit: 1};
+    //   }
+
+    //   if (req.query.sort === "high") {
+    //     sortQuery = { pricePerUnit: -1};
+    //   }
+    //   // pagination
+
+    //   // const page = req.query.page || 1;
+    //   // const limit = req.query.limit || 6;
+    //   const page = Number(req.query.page) || 1;
+    //   const limit = Number(req.query.limit) || 9;
+
+    //   const skip = (page - 1) * limit;
+
+    //   const total = await ticketCollection.countDocuments(query);
+
+    //   const tickets = await ticketCollection
+    //     .find(query)
+    //     .sort(sortQuery)
+    //     .skip(skip)
+    //     .limit(limit)
+    //     .toArray();
+    //   // convert string → number here
+    // const formattedTickets = tickets.map(ticket => ({
+    //   ...ticket,
+    //   pricePerUnit: Number(ticket.pricePerUnit),
+    //   ticketQuantity: Number(ticket.ticketQuantity),
+    // }));
+    //   // const result = await ticketCollection.find({  }).toArray();
+    //   res.json({
+    //     total,
+    //     totalPages: Math.ceil(total / limit),
+    //     currentPage: page,
+    //     tickets: formattedTickets,
+    //   });
+    // });
 
 
     console.log("You successfully connected to MongoDB!");
